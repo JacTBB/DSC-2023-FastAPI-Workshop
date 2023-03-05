@@ -6,7 +6,6 @@
 
 # Practical 1: Setup And Basic Code
 
-<details>
 https://fastapi.tiangolo.com/tutorial/
 
 pip install fastapi
@@ -48,12 +47,10 @@ if __name__ == '__main__':
 Run on http://127.0.0.1:8000/
 
 Note: Response Classes
-</details>
 
 ___
 
 # Practical 2: Jinja Templating
-<details>
 
 https://jinja.palletsprojects.com/en/3.1.x/
 https://jinja.palletsprojects.com/en/3.1.x/templates/
@@ -170,13 +167,11 @@ Root:
         - base.html
         - home.html
 ```
-</details>
 
 ___
 
 # Practical 3: Shelve Database
 
-<details>
 https://docs.python.org/3/library/shelve.html
 
 pip install shelve
@@ -312,4 +307,3 @@ class Note:
 </form>
 {% endblock %}
 ```
-</details>
