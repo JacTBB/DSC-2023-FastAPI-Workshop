@@ -1,6 +1,8 @@
-[Practical 1](#Practical-1:-Setup-And-Basic-Code)
-[Practical 2](#Practical-2:-Jinja-Templating)
-[Practical 3](#Practical-3:-Shelve-Database)
+# NYP Developer Student Club 2023 Fast API Workshop
+## Contents
+[Practical 1](#practical-1-setup-and-basic-code)
+[Practical 2](#practical-2-jinja-templating)
+[Practical 3](#practical-3-shelve-database)
 
 # Practical 1: Setup And Basic Code
 
