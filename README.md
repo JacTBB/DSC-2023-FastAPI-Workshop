@@ -1,8 +1,8 @@
 # NYP Developer Student Club 2023 Fast API Workshop
 ## Contents
-[Practical 1](#practical-1-setup-and-basic-code)
-[Practical 2](#practical-2-jinja-templating)
-[Practical 3](#practical-3-shelve-database)
+- [Practical 1](#practical-1-setup-and-basic-code)
+- [Practical 2](#practical-2-jinja-templating)
+- [Practical 3](#practical-3-shelve-database)
 
 # Practical 1: Setup And Basic Code
 
@@ -57,21 +57,32 @@ https://jinja.palletsprojects.com/en/3.1.x/templates/
 
 pip install jinja2
 
+## **Delimiters:**
+
 `{% ... %}` for **Statements**
 
 `{{ ... }}` for **Expressions** to print to the template output
 
 `{# ... #}` for **Comments** not included in the template output
 
-***Further elaborate on Jinja Tags & Blocks & Inheritance**
+## **Inheritance:**
+
+`{% block <name> %} {% endblock %}`
+
+`{% extends "base.html" %}`
+
+## **Control Structures:**
+
+`{% for user in users %} {% endfor %}`
+
+`{% for key, value in my_dict.items() %} {% endfor %}`
 
 ## main.py
 ```py
 import uvicorn
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request
 from fastapi.responses import *
 from fastapi.templating import Jinja2Templates
-from starlette.status import HTTP_302_FOUND
 
 app = FastAPI()
 
@@ -175,6 +186,7 @@ ___
 https://docs.python.org/3/library/shelve.html
 
 pip install shelve
+pip install starlette
 
 ## main.py
 ```py

@@ -1,8 +1,7 @@
 import uvicorn
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request
 from fastapi.responses import *
 from fastapi.templating import Jinja2Templates
-from starlette.status import HTTP_302_FOUND
 
 app = FastAPI()
 
