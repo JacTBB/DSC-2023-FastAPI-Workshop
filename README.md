@@ -1,5 +1,10 @@
+[Practical 1](#Practical-1:-Setup-And-Basic-Code)
+[Practical 2](#Practical-2:-Jinja-Templating)
+[Practical 3](#Practical-3:-Shelve-Database)
+
 # Practical 1: Setup And Basic Code
 
+<details>
 https://fastapi.tiangolo.com/tutorial/
 
 pip install fastapi
@@ -41,10 +46,12 @@ if __name__ == '__main__':
 Run on http://127.0.0.1:8000/
 
 Note: Response Classes
+</details>
 
 ___
 
 # Practical 2: Jinja Templating
+<details>
 
 https://jinja.palletsprojects.com/en/3.1.x/
 https://jinja.palletsprojects.com/en/3.1.x/templates/
@@ -161,11 +168,13 @@ Root:
         - base.html
         - home.html
 ```
+</details>
 
 ___
 
 # Practical 3: Shelve Database
 
+<details>
 https://docs.python.org/3/library/shelve.html
 
 pip install shelve
@@ -258,3 +267,47 @@ class Note:
         self.title = title
         self.note = note
 ```
+## notes.html
+```html
+{% extends "base.html" %}
+{% block title %} My Notes {% endblock %}
+
+{% block content %}
+<h1>Notes</h1>
+
+{% for uid in notes %}
+    <div style="border: solid 1px grey;">
+        <h3>Note: {{uid}} | {{ notes[uid].title }}</h3>
+        <p>{{ notes[uid].note }}</p>
+        <form method="POST" action="/deletenote/{{uid}}">
+            <input type="submit" value="Delete" class="btn btn-danger"/>
+        </form>
+    </div>
+{% endfor %}
+
+{% endblock %}
+```
+## createnote.html
+```html
+{% extends "base.html" %}
+{% block title %} New Note {% endblock %}
+
+{% block content %}
+<h1 class="display-4">Create A New Note</h1>
+
+<form method="POST">
+  Title:
+  <input type="text" name="title">
+
+  <br>
+
+  Note:
+  <textarea name="note"></textarea>
+
+  <br>
+
+  <input type="submit" value="Submit" class="btn btn-primary"/>
+</form>
+{% endblock %}
+```
+</details>
