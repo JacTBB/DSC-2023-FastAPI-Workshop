@@ -1,4 +1,10 @@
 # NYP Developer Student Club 2023 Fast API Workshop
+
+Description:
+
+This workshop will teach you the basics of Fast API, a web framework used to develop APIs in Python.
+We will also cover Jinja Templating and Shelve Database, and use what we have learnt to built a basic website to store notes.
+
 ## Contents
 - [Practical 1](#practical-1-setup-and-basic-code)
 - [Practical 2](#practical-2-jinja-templating)
