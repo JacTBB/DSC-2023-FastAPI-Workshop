@@ -18,6 +18,7 @@ pip install fastapi
 
 pip install "uvicorn[standard]"
 
+## main.py
 ```py
 import uvicorn
 from fastapi import FastAPI
@@ -49,10 +50,19 @@ async def returnHTMLFile():
 if __name__ == '__main__':
     uvicorn.run(app, host='127.0.0.1', port=8000)
 ```
+## test.html
+```py
+<html>
+    <head>
+        <title>Some HTML in here</title>
+    </head>
+    <body>
+        <h1>Oh look, a HTML File!</h1>
+    </body>
+</html>
+```
 
 Run on http://127.0.0.1:8000/
-
-Note: Response Classes
 
 ___
 
@@ -187,11 +197,48 @@ Root:
 
 ___
 
-# Practical 3: Shelve Database
+# Practical 3: Shelve Database Creating Notes
 
 https://docs.python.org/3/library/shelve.html
 
 pip install shelve
 pip install starlette
 
-TODO:
+## main.py
+```py
+
+```
+## Note.py
+```py
+
+```
+## createnote.html
+```html
+
+```
+
+___
+
+# Practical 4: Shelve Database Viewing Notes
+
+## main.py
+```py
+
+```
+## notes.html
+```html
+
+```
+
+___
+
+# Practical 5: Shelve Database Deleting Notes
+
+## main.py
+```py
+
+```
+## notes.html
+```html
+
+```
