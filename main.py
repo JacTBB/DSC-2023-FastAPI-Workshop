@@ -1,8 +1,7 @@
 import uvicorn
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, HTTPException
 from fastapi.responses import *
 from fastapi.templating import Jinja2Templates
-from starlette.status import HTTP_302_FOUND
 from Note import Note
 import shelve
 
@@ -16,18 +15,12 @@ async def home(request: Request):
 
 @app.get('/notes', response_class=HTMLResponse)
 async def notes(request: Request):
-    notes = {}
-    db = shelve.open('notes.db', 'r')
-
-    try:
-        notes = db['Notes']
-    except:
-        print("Error in retrieving Notes from notes.db.")
-
-    db.close()
-    
-    return templates.TemplateResponse('notes.html', {'request': request, 'notes': notes})
-
+    with shelve.open('notes.db') as database:
+        try:
+            notes = database['Notes']
+            return templates.TemplateResponse('notes.html', {'request': request, 'notes': notes})
+        except KeyError:
+            raise HTTPException(status_code=404, detail="Item not found")
 
 @app.get('/createnote', response_class=HTMLResponse)
 async def createnote(request: Request):
@@ -35,44 +28,32 @@ async def createnote(request: Request):
 
 @app.post('/createnote')
 async def createnoteform(title: str = Form(), note: str = Form()):
-    notes = {}
-    notesID = 0
-    db = shelve.open('notes.db', 'c')
+    with shelve.open('notes.db', writeback=True) as database:
+        try:
+            notes = database['Notes']
+            notesID = database['NotesID']
+            
+            NewNote = Note(title, note)
 
-    try:
-        notes = db['Notes']
-        notesID = db['NotesID']
-    except:
-        print("Error in retrieving Notes from notes.db.")
-
-    NewNote = Note(title, note)
-
-    notesID = notesID + 1
-    notes[notesID] = NewNote
-    db['Notes'] = notes
-    db['NotesID'] = notesID
-
-    db.close()
-    
-    return RedirectResponse(url="/notes", status_code=HTTP_302_FOUND)
+            notesID += 1
+            notes[notesID] = NewNote
+            database['Notes'] = notes
+            database['NotesID'] = notesID
+            
+            return RedirectResponse(url="/notes", status_code=302)
+        except KeyError:
+            raise HTTPException(status_code=404, detail="Item not found")
 
 @app.post('/deletenote/{id}')
 async def deletenote(id: int):
-    notes = {}
-    db = shelve.open('notes.db', 'c')
-
-    try:
-        notes = db['Notes']
-    except:
-        print("Error in retrieving Notes from notes.db.")
-
-    print(id)
-    notes.pop(id)
-    db['Notes'] = notes
-
-    db.close()
-    
-    return RedirectResponse(url="/notes", status_code=HTTP_302_FOUND)
+    with shelve.open('notes.db', writeback=True) as database:
+        try:
+            notes = database['Notes']
+            notes.pop(id)
+            database['Notes'] = notes
+            return RedirectResponse(url="/notes", status_code=302)
+        except KeyError:
+            raise HTTPException(status_code=404, detail="Item not found")
 
 if __name__ == '__main__':
     uvicorn.run(app, host='127.0.0.1', port=8000)
