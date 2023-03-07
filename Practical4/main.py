@@ -15,7 +15,7 @@ async def home(request: Request):
 
 @app.get('/notes', response_class=HTMLResponse)
 async def notes(request: Request):
-    with shelve.open('notes.db') as database:
+    with shelve.open('notes.db', flag='c') as database:
         try:
             notes = database['Notes']
             return templates.TemplateResponse('notes.html', {'request': request, 'notes': notes})
@@ -30,8 +30,8 @@ async def createnote(request: Request):
 async def createnoteform(title: str = Form(), note: str = Form()):
     with shelve.open('notes.db', writeback=True) as database:
         try:
-            notes = database['Notes']
-            notesID = database['NotesID']
+            notes = database['Notes'] or {}
+            notesID = database['NotesID'] or 0
             
             NewNote = Note(title, note)
 
@@ -40,17 +40,6 @@ async def createnoteform(title: str = Form(), note: str = Form()):
             database['Notes'] = notes
             database['NotesID'] = notesID
             
-            return RedirectResponse(url="/notes", status_code=302)
-        except KeyError:
-            raise HTTPException(status_code=404, detail="Item not found")
-
-@app.post('/deletenote/{id}')
-async def deletenote(id: int):
-    with shelve.open('notes.db', writeback=True) as database:
-        try:
-            notes = database['Notes']
-            notes.pop(id)
-            database['Notes'] = notes
             return RedirectResponse(url="/notes", status_code=302)
         except KeyError:
             raise HTTPException(status_code=404, detail="Item not found")

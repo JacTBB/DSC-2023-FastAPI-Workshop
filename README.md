@@ -8,7 +8,9 @@ We will also cover Jinja Templating and Shelve Database, and use what we have le
 ## Contents
 - [Practical 1](#practical-1-setup-and-basic-code)
 - [Practical 2](#practical-2-jinja-templating)
-- [Practical 3](#practical-3-shelve-database)
+- [Practical 3](#practical-3-shelve-database-creating-notes)
+- [Practical 4](#practical-4-shelve-database-viewing-notes)
+- [Practical 5](#practical-5-shelve-database-deleting-notes)
 
 # Practical 1: Setup And Basic Code
 
@@ -127,11 +129,11 @@ if __name__ == '__main__':
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="/notes">View Notes</a>
+                <a class="nav-link" href="notes">View Notes</a>
                 </li>
             
             <li class="nav-item">
-            <a class="nav-link" href="/createnote">Create Notes</a>
+            <a class="nav-link" href="createnote">Create Notes</a>
             </li>
             
         </ul>
@@ -204,17 +206,87 @@ https://docs.python.org/3/library/shelve.html
 pip install shelve
 pip install starlette
 
+**Creating our Notes Database**
+- Run this code once to make a Notes and NotesID dictionary in our database
+```py
+@app.get('/createnote')
+async def createnoteform(title: str = Form(), note: str = Form()):
+    with shelve.open('notes.db', writeback=True) as database:
+        database['Notes'] = {}
+        database['NotesID'] = 0
+```
+
 ## main.py
 ```py
+import uvicorn
+from fastapi import FastAPI, Request, Form, HTTPException
+from fastapi.responses import *
+from fastapi.templating import Jinja2Templates
+from Note import Note
+import shelve
 
+app = FastAPI()
+
+templates = Jinja2Templates(directory='templates')
+
+@app.get('/', response_class=HTMLResponse)
+async def home(request: Request):
+    return templates.TemplateResponse('home.html', {'request': request})
+
+@app.get('/createnote', response_class=HTMLResponse)
+async def createnote(request: Request):
+    return templates.TemplateResponse('createnote.html', {'request': request})
+
+@app.post('/createnote')
+async def createnoteform(title: str = Form(), note: str = Form()):
+    with shelve.open('notes.db', writeback=True) as database:
+        try:
+            notes = database['Notes'] or {}
+            notesID = database['NotesID'] or 0
+            
+            NewNote = Note(title, note)
+
+            notesID += 1
+            notes[notesID] = NewNote
+            database['Notes'] = notes
+            database['NotesID'] = notesID
+            
+            return RedirectResponse(url="/notes", status_code=302)
+        except KeyError:
+            raise HTTPException(status_code=404, detail="Item not found")
+
+if __name__ == '__main__':
+    uvicorn.run(app, host='127.0.0.1', port=8000)
 ```
 ## Note.py
 ```py
-
+class Note:
+    def __init__(self, title, note):
+        self.title = title
+        self.note = note
 ```
 ## createnote.html
 ```html
+{% extends "base.html" %}
+{% block title %} New Note {% endblock %}
 
+{% block content %}
+<h1 class="display-4">Create A New Note</h1>
+
+<form method="POST">
+  Title:
+  <input type="text" name="title">
+
+  <br>
+
+  Note:
+  <textarea name="note"></textarea>
+
+  <br>
+
+  <input type="submit" value="Submit" class="btn btn-primary"/>
+</form>
+{% endblock %}
 ```
 
 ___
@@ -223,11 +295,71 @@ ___
 
 ## main.py
 ```py
+import uvicorn
+from fastapi import FastAPI, Request, Form, HTTPException
+from fastapi.responses import *
+from fastapi.templating import Jinja2Templates
+from Note import Note
+import shelve
 
+app = FastAPI()
+
+templates = Jinja2Templates(directory='templates')
+
+@app.get('/', response_class=HTMLResponse)
+async def home(request: Request):
+    return templates.TemplateResponse('home.html', {'request': request})
+
+@app.get('/notes', response_class=HTMLResponse)
+async def notes(request: Request):
+    with shelve.open('notes.db', flag='c') as database:
+        try:
+            notes = database['Notes']
+            return templates.TemplateResponse('notes.html', {'request': request, 'notes': notes})
+        except KeyError:
+            raise HTTPException(status_code=404, detail="Item not found")
+
+@app.get('/createnote', response_class=HTMLResponse)
+async def createnote(request: Request):
+    return templates.TemplateResponse('createnote.html', {'request': request})
+
+@app.post('/createnote')
+async def createnoteform(title: str = Form(), note: str = Form()):
+    with shelve.open('notes.db', writeback=True) as database:
+        try:
+            notes = database['Notes'] or {}
+            notesID = database['NotesID'] or 0
+            
+            NewNote = Note(title, note)
+
+            notesID += 1
+            notes[notesID] = NewNote
+            database['Notes'] = notes
+            database['NotesID'] = notesID
+            
+            return RedirectResponse(url="/notes", status_code=302)
+        except KeyError:
+            raise HTTPException(status_code=404, detail="Item not found")
+
+if __name__ == '__main__':
+    uvicorn.run(app, host='127.0.0.1', port=8000)
 ```
 ## notes.html
 ```html
+{% extends "base.html" %}
+{% block title %} My Notes {% endblock %}
 
+{% block content %}
+<h1>Notes</h1>
+
+{% for uid in notes %}
+    <div style="border: solid 1px grey;">
+        <h3>Note: {{uid}} | {{ notes[uid].title }}</h3>
+        <p>{{ notes[uid].note }}</p>
+    </div>
+{% endfor %}
+
+{% endblock %}
 ```
 
 ___
@@ -236,9 +368,83 @@ ___
 
 ## main.py
 ```py
+import uvicorn
+from fastapi import FastAPI, Request, Form, HTTPException
+from fastapi.responses import *
+from fastapi.templating import Jinja2Templates
+from Note import Note
+import shelve
 
+app = FastAPI()
+
+templates = Jinja2Templates(directory='templates')
+
+@app.get('/', response_class=HTMLResponse)
+async def home(request: Request):
+    return templates.TemplateResponse('home.html', {'request': request})
+
+@app.get('/notes', response_class=HTMLResponse)
+async def notes(request: Request):
+    with shelve.open('notes.db', flag='c') as database:
+        try:
+            notes = database['Notes']
+            return templates.TemplateResponse('notes.html', {'request': request, 'notes': notes})
+        except KeyError:
+            raise HTTPException(status_code=404, detail="Item not found")
+
+@app.get('/createnote', response_class=HTMLResponse)
+async def createnote(request: Request):
+    return templates.TemplateResponse('createnote.html', {'request': request})
+
+@app.post('/createnote')
+async def createnoteform(title: str = Form(), note: str = Form()):
+    with shelve.open('notes.db', writeback=True) as database:
+        try:
+            notes = database['Notes'] or {}
+            notesID = database['NotesID'] or 0
+            
+            NewNote = Note(title, note)
+
+            notesID += 1
+            notes[notesID] = NewNote
+            database['Notes'] = notes
+            database['NotesID'] = notesID
+            
+            return RedirectResponse(url="/notes", status_code=302)
+        except KeyError:
+            raise HTTPException(status_code=404, detail="Item not found")
+
+@app.post('/deletenote/{id}')
+async def deletenote(id: int):
+    with shelve.open('notes.db', writeback=True) as database:
+        try:
+            notes = database['Notes']
+            notes.pop(id)
+            database['Notes'] = notes
+            return RedirectResponse(url="/notes", status_code=302)
+        except KeyError:
+            raise HTTPException(status_code=404, detail="Item not found")
+
+if __name__ == '__main__':
+    uvicorn.run(app, host='127.0.0.1', port=8000)
 ```
 ## notes.html
 ```html
+{% extends "base.html" %}
+{% block title %} My Notes {% endblock %}
 
+{% block content %}
+<h1>Notes</h1>
+
+{% for uid in notes %}
+    <div style="border: solid 1px grey;">
+        <h3>Note: {{uid}} | {{ notes[uid].title }}</h3>
+        <p>{{ notes[uid].note }}</p>
+        <form method="POST" action="/deletenote/{{uid}}">
+            <input type="submit" value="Delete" class="btn btn-danger"/>
+        </form>
+    </div>
+{% endfor %}
+
+{% endblock %}
 ```
