@@ -2,18 +2,18 @@ import uvicorn
 from fastapi import FastAPI, Request, Form, HTTPException
 from fastapi.responses import *
 from fastapi.templating import Jinja2Templates
-from Note import Note
+from note import Note
 import shelve
 
 app = FastAPI()
 
 templates = Jinja2Templates(directory='templates')
 
-@app.get('/', response_class=HTMLResponse)
+@app.get('/')
 async def home(request: Request):
     return templates.TemplateResponse('home.html', {'request': request})
 
-@app.get('/notes', response_class=HTMLResponse)
+@app.get('/notes')
 async def notes(request: Request):
     with shelve.open('notes.db', flag='c') as database:
         try:
@@ -22,7 +22,7 @@ async def notes(request: Request):
         except KeyError:
             raise HTTPException(status_code=404, detail="Item not found")
 
-@app.get('/createnote', response_class=HTMLResponse)
+@app.get('/createnote')
 async def createnote(request: Request):
     return templates.TemplateResponse('createnote.html', {'request': request})
 
