@@ -204,7 +204,6 @@ ___
 https://docs.python.org/3/library/shelve.html
 
 pip install shelve
-pip install starlette
 
 **Creating our Notes Database**
 - Run this code once to make a Notes and NotesID dictionary in our database
