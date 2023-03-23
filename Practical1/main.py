@@ -8,22 +8,22 @@ app = FastAPI()
 async def root():
     return {'message': 'Hello World'}
 
-@app.get('/html', response_class=HTMLResponse)
+@app.get('/html')
 async def returnHTML():
-    return """
+    return HTMLResponse("""
     <html>
         <head>
             <title>Some HTML in here</title>
         </head>
         <body>
-            <h1>Look ma! HTML!</h1>
+            <h1>HTML!</h1>
         </body>
     </html>
-    """
+    """)
 
-@app.get('/htmlfile', response_class=FileResponse)
+@app.get('/htmlfile')
 async def returnHTMLFile():
-    return 'test.html'
+    return FileResponse('test.html')
 
 if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=8000)
+    uvicorn.run(app, host='127.0.0.1', port=8000)

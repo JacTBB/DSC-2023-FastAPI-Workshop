@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI, Request, Form, HTTPException
 from fastapi.responses import *
 from fastapi.templating import Jinja2Templates
-from Note import Note
+from note import Note
 import shelve
 
 app = FastAPI()
