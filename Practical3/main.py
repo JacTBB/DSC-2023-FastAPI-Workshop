@@ -9,11 +9,11 @@ app = FastAPI()
 
 templates = Jinja2Templates(directory='templates')
 
-@app.get('/', response_class=HTMLResponse)
+@app.get('/')
 async def home(request: Request):
     return templates.TemplateResponse('home.html', {'request': request})
 
-@app.get('/createnote', response_class=HTMLResponse)
+@app.get('/createnote')
 async def createnote(request: Request):
     return templates.TemplateResponse('createnote.html', {'request': request})
 
@@ -21,8 +21,8 @@ async def createnote(request: Request):
 async def createnoteform(title: str = Form(), note: str = Form()):
     with shelve.open('notes.db', writeback=True) as database:
         try:
-            notes = database['Notes'] or {}
-            notesID = database['NotesID'] or 0
+            notes = database['Notes']
+            notesID = database['NotesID']
             
             NewNote = Note(title, note)
 
