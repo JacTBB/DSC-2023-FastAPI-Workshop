@@ -4,10 +4,10 @@
 {% block content %}
 <h1>Notes</h1>
 
-{% for uid in notes %}
+{% for uid, note in notes.items() %}
     <div style="border: solid 1px grey;">
-        <h3>Note: {{uid}} | {{ notes[uid].title }}</h3>
-        <p>{{ notes[uid].note }}</p>
+        <h3>Note: {{uid}} | {{ note.title }}</h3>
+        <p>{{ notes.note }}</p>
         <form method="POST" action="/deletenote/{{uid}}">
             <input type="submit" value="Delete" class="btn btn-danger"/>
         </form>
