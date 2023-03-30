@@ -5,6 +5,11 @@ from fastapi.templating import Jinja2Templates
 from note import Note
 import shelve
 
+with shelve.open('notes.db', writeback=True) as database:
+    if 'Notes' not in database:
+        database['Notes'] = {}
+        database['NotesID'] = 0 
+
 app = FastAPI()
 
 templates = Jinja2Templates(directory='templates')
